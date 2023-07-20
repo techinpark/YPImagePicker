@@ -39,11 +39,24 @@ extension PHCachingImageManager {
                                             height: targetSize.height)
                 if let imageRef = image.cgImage?.cropping(to: scaledCropRect) {
                     let croppedImage = UIImage(cgImage: imageRef)
-                    let exifs = self.metadataForImageData(data: data)
+                    let exifs = self.exifDataForImageData(data: data)
                     callback(croppedImage, exifs)
                 }
             }
         }
+    }
+    
+    private func exifDataForImageData(data: Data) -> [String: Any] {
+        var exifData: [String: Any] = [:]
+        
+        if let imageSource = CGImageSourceCreateWithData(data as CFData, nil),
+            let imageProperties = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, nil),
+            let propertiesDict = imageProperties as? [String: Any],
+            let exifDict = propertiesDict[kCGImagePropertyExifDictionary as String] as? [String: Any] {
+            exifData = exifDict
+        }
+        
+        return exifData
     }
     
     private func metadataForImageData(data: Data) -> [String: Any] {
