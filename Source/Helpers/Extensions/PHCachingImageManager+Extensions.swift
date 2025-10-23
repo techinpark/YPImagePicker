@@ -48,24 +48,15 @@ extension PHCachingImageManager {
     
     private func exifDataForImageData(data: Data) -> [String: Any] {
         var exifData: [String: Any] = [:]
-        
+
         if let imageSource = CGImageSourceCreateWithData(data as CFData, nil),
             let imageProperties = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, nil),
             let propertiesDict = imageProperties as? [String: Any],
             let exifDict = propertiesDict[kCGImagePropertyExifDictionary as String] as? [String: Any] {
             exifData = exifDict
         }
-        
+
         return exifData
-    }
-    
-    private func metadataForImageData(data: Data) -> [String: Any] {
-        if let imageSource = CGImageSourceCreateWithData(data as CFData, nil),
-        let imageProperties = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, nil),
-        let metaData = imageProperties as? [String: Any] {
-            return metaData
-        }
-        return [:]
     }
     
     func fetchPreviewFor(video asset: PHAsset, callback: @escaping (UIImage) -> Void) {
